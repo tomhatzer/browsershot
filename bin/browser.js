@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
 
+const path = require('path');
+
 const request = JSON.parse(process.argv[2]);
 
 const getOutput = async (page, request) => {
@@ -16,17 +18,29 @@ const getOutput = async (page, request) => {
     return output.toString('base64');
 };
 
+const removeUserDataDirectory = async() => {
+    if(request.options && request.options.removeUserDataDirOnDone) {
+        
+    }
+};
+
 const callChrome = async () => {
     let browser;
     let page;
     let output;
 
     try {
-        browser = await puppeteer.launch({
+	    let launchOptions = {
             ignoreHTTPSErrors: request.options.ignoreHttpsErrors,
             executablePath: request.options.executablePath,
             args: request.options.args || []
-        });
+        };
+        
+        if(request.options && request.options.userDataDir) {
+	        launchOptions.userDataDir = request.options.userDataDir;
+        }
+        
+        browser = await puppeteer.launch(launchOptions);
 
         page = await browser.newPage();
 
@@ -106,10 +120,14 @@ const callChrome = async () => {
         }
 
         await browser.close();
+        
+        await.removeUserDataDirectory();
     } catch (exception) {
         if (browser) {
             await browser.close();
         }
+        
+        await.removeUserDataDirectory();
 
         console.error(exception);
 

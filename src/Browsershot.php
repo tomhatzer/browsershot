@@ -107,6 +107,20 @@ class Browsershot
         return $this;
     }
 
+    public function setUserDataDir(string $dataDirectory)
+    {
+        $this->setOption('userDataDir', $dataDirectory);
+
+        return $this;
+    }
+
+    public function removeUserDataDirOnDone(bool $removeDirectory)
+    {
+        $this->setOption('removeUserDataDirOnDone', $removeDirectory);
+
+        return $this;
+    }
+
     public function useCookies(array $cookies)
     {
         $this->setExtraHttpHeaders(['Cookie' => http_build_query($cookies, null, '; ')]);
